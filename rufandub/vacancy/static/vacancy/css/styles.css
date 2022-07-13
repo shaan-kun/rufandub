@@ -356,9 +356,15 @@ ul.lang-list li a:hover {color: #fdc073;}
 #footer {
 	box-sizing: border-box;
 
+<<<<<<< HEAD
 	background: #0C4B33;
 	padding: 5px;
 	color: white;
+=======
+	background: #3F4137;
+	padding: 5px;
+	color: #aaa;
+>>>>>>> df777a9 (Создан базовый каркас сайта)
 	font-size: 14px;
 	font-family: Verdana, Geneva, Arial, Helvetica;
 	text-align: left;
