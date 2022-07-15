@@ -11,12 +11,10 @@ menu = [
 ]
 
 def index(request):
-    posts = Vacancy.objects.all()
-    categories = Category.objects.all()
+    posts = Vacancy.objects.filter(is_published=True)
 
     context = {
         'posts': posts,
-        'categories': categories,
         'menu': menu,
         'title': 'Главная страница',
         'selected_category': 0,
@@ -40,15 +38,13 @@ def show_post(request, post_id):
     return HttpResponse(f"Отображение статьи с id = {post_id}")
 
 def show_category(request, category_id):
-    posts = Vacancy.objects.filter(category_id=category_id)
-    categories = Category.objects.all()
+    posts = Vacancy.objects.filter(category_id=category_id, is_published=True)
 
     if len(posts) == 0:
         raise Http404()
 
     context = {
         'posts': posts,
-        'categories': categories,
         'menu': menu,
         'title': 'Отображение по рубрикам',
         'selected_category': category_id,
