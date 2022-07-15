@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.urls import path, include
 
 from rufandub import settings
-from vacancy.views import index
+from vacancy.views import pageNotFound
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -27,3 +27,6 @@ urlpatterns = [
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+# работает, если DEBUG установлен в False
+handler404 = pageNotFound
