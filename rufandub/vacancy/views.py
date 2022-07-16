@@ -1,7 +1,8 @@
 from django.http import HttpResponse, HttpResponseNotFound, Http404
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 
-from vacancy.models import Vacancy, Category
+from .forms import *
+from .models import *
 
 menu = [
     {'title': 'О сайте', 'url_name': 'about'},
@@ -26,7 +27,20 @@ def about(request):
     return render(request, 'vacancy/about.html', {'menu': menu, 'title': 'О сайте'})
 
 def add_page(request):
-    return HttpResponse("Добавление статьи")
+    if request.method == 'POST':
+        form = AddPostForm(request.POST)
+
+        if form.is_valid():
+            # print(form.cleaned_data)
+            try:
+                Vacancy.objects.create(**form.cleaned_data)
+                return redirect('home')
+            except:
+                form.add_error(None, 'Ошибка добавления поста')
+    else:
+        form = AddPostForm()
+
+    return render(request, 'vacancy/add_page.html', {'form': form, 'menu': menu, 'title': 'Добавление статьи'})
 
 def contact(request):
     return HttpResponse("Обратная связь")
