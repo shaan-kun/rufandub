@@ -46,8 +46,8 @@ def show_post(request, post_slug):
 
     return render(request, 'vacancy/post.html', context=context)
 
-def show_category(request, category_id):
-    posts = Vacancy.objects.filter(category_id=category_id, is_published=True)
+def show_category(request, category_slug):
+    posts = Vacancy.objects.filter(category__slug=category_slug)
 
     if len(posts) == 0:
         raise Http404()
@@ -56,7 +56,7 @@ def show_category(request, category_id):
         'posts': posts,
         'menu': menu,
         'title': 'Отображение по рубрикам',
-        'selected_category': category_id,
+        'selected_category': category_slug,
     }
 
     return render(request, 'vacancy/index.html', context=context)
