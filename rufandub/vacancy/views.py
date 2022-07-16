@@ -1,5 +1,5 @@
 from django.http import HttpResponse, HttpResponseNotFound, Http404
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 
 from vacancy.models import Vacancy, Category
 
@@ -34,8 +34,17 @@ def contact(request):
 def login(request):
     return HttpResponse("Авторизация")
 
-def show_post(request, post_id):
-    return HttpResponse(f"Отображение статьи с id = {post_id}")
+def show_post(request, post_slug):
+    post = get_object_or_404(Vacancy, slug=post_slug)
+
+    context = {
+        'post': post,
+        'menu': menu,
+        'title': post.title,
+        'selected_category': post.category_id,
+    }
+
+    return render(request, 'vacancy/post.html', context=context)
 
 def show_category(request, category_id):
     posts = Vacancy.objects.filter(category_id=category_id, is_published=True)
