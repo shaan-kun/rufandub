@@ -26,7 +26,7 @@ class VacancyHome(DataMixin, ListView):
         return dict(list(context.items()) + list(c_def.items()))
 
     def get_queryset(self):
-        return Vacancy.objects.filter(is_published=True)
+        return Vacancy.objects.filter(is_published=True).select_related('category')
 
 # def index(request):
 #     posts = Vacancy.objects.filter(is_published=True)
@@ -114,13 +114,13 @@ class VacancyCategory(DataMixin, ListView):
     allow_empty = False
 
     def get_queryset(self):
-        return Vacancy.objects.filter(category__slug=self.kwargs['category_slug'], is_published=True)
+        return Vacancy.objects.filter(category__slug=self.kwargs['category_slug'], is_published=True).select_related('category')
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
-
-        c_def = self.get_user_context(title='Категория — ' + str(context['posts'][0].category),
-                                      selected_category=context['posts'][0].category_id)
+        c = Category.objects.get(slug=self.kwargs['category_slug'])
+        c_def = self.get_user_context(title='Категория — ' + str(c.name),
+                                      selected_category=c.pk)
 
         return dict(list(context.items()) + list(c_def.items()))
 
