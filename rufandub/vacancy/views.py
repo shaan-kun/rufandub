@@ -2,30 +2,24 @@ from django.http import HttpResponse, HttpResponseNotFound, Http404
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .forms import *
 from .models import *
+from .utils import *
 
-menu = [
-    {'title': 'О сайте', 'url_name': 'about'},
-    {'title': 'Добавить статью', 'url_name': 'add_page'},
-    {'title': 'Обратная связь', 'url_name': 'contact'},
-    {'title': 'Войти', 'url_name': 'login'},
-]
 
-class VacancyHome(ListView):
+
+class VacancyHome(DataMixin, ListView):
     model = Vacancy
     template_name = 'vacancy/index.html'
     context_object_name = 'posts'
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
+        c_def = self.get_user_context(title="Главная страница")
 
-        context['menu'] = menu
-        context['title'] = 'Главная страница'
-        context['selected_category'] = 0
-
-        return context
+        return dict(list(context.items()) + list(c_def.items()))
 
     def get_queryset(self):
         return Vacancy.objects.filter(is_published=True)
@@ -46,18 +40,18 @@ def about(request):
     return render(request, 'vacancy/about.html', {'menu': menu, 'title': 'О сайте'})
 
 
-class AddPage(CreateView):
+class AddPage(LoginRequiredMixin, DataMixin, CreateView):
     form_class = AddPostForm
     template_name = 'vacancy/add_page.html'
     success_url = reverse_lazy('home')
+    login_url = reverse_lazy('home')
+    raise_exception = True
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
+        c_def = self.get_user_context(title="Добавление статьи")
 
-        context['menu'] = menu
-        context['title'] = 'Добавление статьи'
-
-        return context
+        return dict(list(context.items()) + list(c_def.items()))
 
 
 # def add_page(request):
@@ -92,7 +86,7 @@ def login(request):
 #     return render(request, 'vacancy/post.html', context=context)
 
 
-class ShowPost(DetailView):
+class ShowPost(DataMixin, DetailView):
     model = Vacancy
     template_name = 'vacancy/post.html'
     slug_url_kwarg = 'post_slug'
@@ -100,14 +94,12 @@ class ShowPost(DetailView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
+        c_def = self.get_user_context(title=context['post'])
 
-        context['menu'] = menu
-        context['title'] = context['post']
-
-        return context
+        return dict(list(context.items()) + list(c_def.items()))
 
 
-class VacancyCategory(ListView):
+class VacancyCategory(DataMixin, ListView):
     model = Vacancy
     template_name = 'vacancy/index.html'
     context_object_name = 'posts'
@@ -119,11 +111,10 @@ class VacancyCategory(ListView):
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        context['menu'] = menu
-        context['title'] = 'Категория — ' + str(context['posts'][0].category)
-        context['selected_category'] = context['posts'][0].category_id
+        c_def = self.get_user_context(title='Категория — ' + str(context['posts'][0].category),
+                                      selected_category=context['posts'][0].category_id)
 
-        return context
+        return dict(list(context.items()) + list(c_def.items()))
 
 # def show_category(request, category_slug):
 #     posts = Vacancy.objects.filter(category__slug=category_slug)
