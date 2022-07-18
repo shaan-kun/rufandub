@@ -41,7 +41,7 @@ class VacancyHome(DataMixin, ListView):
 #     return render(request, 'vacancy/index.html', context=context)
 
 def about(request):
-    return render(request, 'vacancy/about.html', {'menu': menu, 'title': 'О сайте'})
+    return redirect('home')
 
 
 class AddPage(LoginRequiredMixin, DataMixin, CreateView):
@@ -72,7 +72,7 @@ class AddPage(LoginRequiredMixin, DataMixin, CreateView):
 #     return render(request, 'vacancy/add_page.html', {'form': form, 'menu': menu, 'title': 'Добавление статьи'})
 
 def contact(request):
-    return HttpResponse("Обратная связь")
+    return redirect('home')
 
 # def login(request):
 #     return HttpResponse("Авторизация")
